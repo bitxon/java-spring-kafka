@@ -6,9 +6,13 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 @Slf4j
 @Service
 public class OrderListener {
+
+    public final ConcurrentLinkedQueue<Order> repository = new ConcurrentLinkedQueue<>();
 
     @KafkaListener(
         topics = "order",
@@ -17,6 +21,8 @@ public class OrderListener {
     )
     public void handleOrder(@Payload Order order) {
         log.info("Kafka message: {}", order);
+        repository.add(order);
+
         try {
             Thread.sleep(2000); // pretend that this is long-running operation
         } catch (InterruptedException e) {
