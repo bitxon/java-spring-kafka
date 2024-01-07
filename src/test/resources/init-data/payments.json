@@ -1,3 +1,10 @@
-key01#{"message": "Payment1"}
-key02#{"message": "Payment2"}
-key03#{"message": "Payment3"}
+key01#{"message": "", "amount": 100}
+key02#{"message": "", "amount": 200}
+key03#{"message": "", "amount": 300}
+key04#{"message": "", "amount": 400}
+key05#{"message": "", "amount": 500}
+key06#{"message": "", "amount": 600}
+key07#{"message": "", "amount": 700}
+key08#{"message": "", "amount": 800}
+key09#{"message": "", "amount": 900}
+key10#{"message": "", "amount": 1000}

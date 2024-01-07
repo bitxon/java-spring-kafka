@@ -8,11 +8,13 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
 public class OrderListener {
 
+    public final AtomicInteger attempt = new AtomicInteger();
     public final ConcurrentLinkedQueue<Order> repository = new ConcurrentLinkedQueue<>();
 
     @KafkaListener(
@@ -21,14 +23,16 @@ public class OrderListener {
         concurrency = "3"
     )
     public void handleOrder(@Payload @Valid Order order) {
-        log.info("Kafka message: {}", order);
-        repository.add(order);
+        log.info("Order message: {}", order);
+        attempt.incrementAndGet();
 
         try {
             Thread.sleep(2000); // pretend that this is long-running operation
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        repository.add(order);
     }
 
 }
