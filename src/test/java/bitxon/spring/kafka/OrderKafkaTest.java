@@ -76,9 +76,9 @@ class OrderKafkaTest {
     void invalidFieldValue() throws JsonProcessingException {
         kafkaWriter.send("order", new Order(null, 1));
 
-        await().atMost(Duration.ofSeconds(3)).untilAsserted(() ->
+        await().pollDelay(Duration.ofSeconds(2)).untilAsserted(() ->
             assertThat(orderListener.repository).as("Number of attempts to process")
-                .hasSize(1)); // TODO make equal to 0
+                .isEmpty());
     }
 
 }

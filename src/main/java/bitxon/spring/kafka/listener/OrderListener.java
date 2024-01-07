@@ -1,6 +1,7 @@
 package bitxon.spring.kafka.listener;
 
 import bitxon.spring.kafka.model.Order;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -19,7 +20,7 @@ public class OrderListener {
         properties = "spring.json.value.default.type=bitxon.spring.kafka.model.Order",
         concurrency = "3"
     )
-    public void handleOrder(@Payload Order order) {
+    public void handleOrder(@Payload @Valid Order order) {
         log.info("Kafka message: {}", order);
         repository.add(order);
 
