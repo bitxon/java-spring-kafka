@@ -29,7 +29,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class PaymentKafkaTest {
 
     public static final Duration DELAY = Duration.ofMillis(1_000);
-    public static final Duration TIMEOUT = Duration.ofSeconds(3_000);
+    public static final Duration TIMEOUT = Duration.ofMillis(3_000);
 
     @Autowired
     KafkaWriter kafkaWriter;

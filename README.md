@@ -6,7 +6,8 @@ Application will consumer message right after startup `->` see logs
 
 ## Description
 - `OrderListener` simulates long-running operation - 2000millis for one message, but topic has 3 partitions and listener has `concurrency = "3"` so we parallelize processing.
-- `PaymentListener` simulates failure using custom exceptions Retryable and Non-Retryable 
+- `PaymentListener` simulates failure using custom exceptions Retryable and Non-Retryable
+- `ShipmentBatchListener` simulates failure using custom exceptions Retryable and Non-Retryable in **Batch**
 
 ## Run
 ```shell

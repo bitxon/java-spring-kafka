@@ -11,6 +11,7 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class KafkaWriter {
@@ -27,7 +28,8 @@ public class KafkaWriter {
         producer = new KafkaProducer<>(
             Map.of(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
-                ProducerConfig.ACKS_CONFIG, "all"
+                ProducerConfig.ACKS_CONFIG, "all",  //default=all
+                ProducerConfig.LINGER_MS_CONFIG, "100"   //default=0, Increase value to make sure we send batch
             ),
             new StringSerializer(),
             new StringSerializer()
@@ -36,6 +38,12 @@ public class KafkaWriter {
 
     public void send(String topic, Object rawPayload) throws JsonProcessingException {
         send(topic, rawPayload, null);
+    }
+
+    public void send(String topic, Collection<Object> rawPayloads) throws JsonProcessingException {
+        for (Object rawPayload : rawPayloads) {
+            send(topic, rawPayload);
+        }
     }
 
     public void send(String topic, Object rawPayload, Map<String, String> rawHeaders) throws JsonProcessingException {
