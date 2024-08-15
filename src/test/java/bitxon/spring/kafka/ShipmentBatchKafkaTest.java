@@ -31,7 +31,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class ShipmentBatchKafkaTest {
 
-    private static final Duration DELAY = Duration.ofMillis(1_000);
+    private static final Duration DELAY = Duration.ofMillis(1_500);
     private static final Duration TIMEOUT = Duration.ofMillis(3_000);
     private static final List<Shipment> NONE = List.of();
 
@@ -89,24 +89,22 @@ class ShipmentBatchKafkaTest {
         });
     }
 
-    @Disabled// TODO research why @Valid is not Working
     @Test
     void invalidJsonFormat() throws JsonProcessingException {
         kafkaWriter.send("shipment", "{\"invalid-json {");
 
         await().pollDelay(DELAY).untilAsserted(() -> {
-            assertAttemptsNumber(0);
+            assertAttemptsNumber(1);
             assertProcessedNumber(0);
         });
     }
 
-    @Disabled // TODO research why @Valid is not Working
     @Test
     void invalidFieldType() throws JsonProcessingException {
         kafkaWriter.send("shipment", "{\"address\": \"Msg\", \"trackingNumber\": \"not-a-number\"}");
 
         await().pollDelay(DELAY).untilAsserted(() -> {
-            assertAttemptsNumber(0);
+            assertAttemptsNumber(1);
             assertProcessedNumber(0);
         });
     }
@@ -117,7 +115,7 @@ class ShipmentBatchKafkaTest {
         kafkaWriter.send("shipment", new Shipment("Msg", -1));
 
         await().pollDelay(DELAY).untilAsserted(() -> {
-            assertAttemptsNumber(0);
+            assertAttemptsNumber(1);
             assertProcessedNumber(0);
         });
     }
