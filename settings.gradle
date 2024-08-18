@@ -1,1 +1,9 @@
 rootProject.name = 'java-spring-kafka'
+
+include 'common-utils-impl'
+include 'common-utils-test'
+
+include 'kafka-single-pojo'
+include 'kafka-batch-pojo'
+include 'kafka-batch-pojo-v2'
+

@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'bitxon.spring.kafka'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // compile scope is being used to avoid transitive influence on main modules
+    compileOnly 'org.apache.kafka:kafka-clients:3.6.1'
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.15.3'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: app-kafka-batch-pojo-v2
+
+custom:
+  shipment:
+    bootstrap-servers: localhost:9092
+    group-id: ${spring.application.name}
