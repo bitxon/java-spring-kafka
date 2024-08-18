@@ -1,0 +1,13 @@
+spring:
+
+  application:
+    name: app-kafka-batch-pojo
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ${spring.application.name}
+      auto-offset-reset: earliest # default='latest'
+      max-poll-records: 10 # default=500
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer

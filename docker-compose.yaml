@@ -42,7 +42,7 @@ services:
   kafka-init-topics:
     image: confluentinc/cp-kafka:7.2.1
     volumes:
-      - ./src/test/resources/init-data:/data
+      - ./common-dataset:/data
     depends_on:
       - kafka
     entrypoint: [ '/bin/sh', '-c']
@@ -53,7 +53,7 @@ services:
 
       echo 'Creating Kafka topics...'
       kafka-topics --create --topic order --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
-      kafka-topics --create --topic payment --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+      kafka-topics --create --topic payment --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
       kafka-topics --create --topic shipment --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
 
       echo 'Populating Kafka topics with messages...'
