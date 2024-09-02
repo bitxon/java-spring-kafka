@@ -2,13 +2,13 @@ package bitxon.spring.kafka;
 
 import bitxon.spring.kafka.utils.KafkaWriter;
 import bitxon.spring.kafka.config.TestContainersConfig;
-import bitxon.spring.kafka.config.TestProducerConfig;
+import bitxon.spring.kafka.config.TestUtilsConfig;
 import bitxon.spring.kafka.listener.OrderListener;
 import bitxon.spring.kafka.model.Order;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
@@ -20,13 +20,14 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Import({
     TestContainersConfig.class,
-    TestProducerConfig.class
+    TestUtilsConfig.class
 })
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class OrderListenerTest {
     public static final Duration DELAY = Duration.ofMillis(2_100);
     public static final Duration TIMEOUT = Duration.ofMillis(3_000);
 
+    @Qualifier("orderKafkaWriter")
     @Autowired
     KafkaWriter kafkaWriter;
     @Autowired
@@ -39,8 +40,8 @@ class OrderListenerTest {
     }
 
     @Test
-    void validRequestWithObject() throws JsonProcessingException {
-        kafkaWriter.send("order", new Order("Product1", 1));
+    void validRequestWithObject() {
+        kafkaWriter.send(new Order("Product1", 1));
 
         await().atMost(TIMEOUT).untilAsserted(() ->
             verify(1, 1)
@@ -48,8 +49,8 @@ class OrderListenerTest {
     }
 
     @Test
-    void validRequestWithString() throws JsonProcessingException {
-        kafkaWriter.send("order", "{\"product\": \"Order1\", \"quantity\": 1}");
+    void validRequestWithString() {
+        kafkaWriter.send("{\"product\": \"Order1\", \"quantity\": 1}");
 
         await().atMost(TIMEOUT).untilAsserted(() ->
             verify(1, 1)
@@ -57,8 +58,8 @@ class OrderListenerTest {
     }
 
     @Test
-    void invalidJsonFormat() throws JsonProcessingException {
-        kafkaWriter.send("order", "{\"invalid-json {");
+    void invalidJsonFormat() {
+        kafkaWriter.send("{\"invalid-json {");
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(0, 0)
@@ -66,8 +67,8 @@ class OrderListenerTest {
     }
 
     @Test
-    void invalidFieldType() throws JsonProcessingException {
-        kafkaWriter.send("order", "{\"product\": \"Order1\", \"quantity\": \"not-a-number\"}");
+    void invalidFieldType() {
+        kafkaWriter.send("{\"product\": \"Order1\", \"quantity\": \"not-a-number\"}");
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(0, 0)
@@ -75,8 +76,8 @@ class OrderListenerTest {
     }
 
     @Test
-    void invalidFieldValue() throws JsonProcessingException {
-        kafkaWriter.send("order", new Order(null, 1));
+    void invalidFieldValue() {
+        kafkaWriter.send(new Order(null, 1));
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(0, 0)

@@ -1,14 +1,14 @@
 package bitxon.spring.kafka;
 
 import bitxon.spring.kafka.config.TestContainersConfig;
-import bitxon.spring.kafka.config.TestProducerConfig;
+import bitxon.spring.kafka.config.TestUtilsConfig;
 import bitxon.spring.kafka.listener.PaymentListener;
 import bitxon.spring.kafka.model.Payment;
 import bitxon.spring.kafka.utils.KafkaWriter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
@@ -22,13 +22,14 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Import({
     TestContainersConfig.class,
-    TestProducerConfig.class
+    TestUtilsConfig.class
 })
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class PaymentListenerTest {
     public static final Duration DELAY = Duration.ofMillis(1_000);
     public static final Duration TIMEOUT = Duration.ofMillis(3_000);
 
+    @Qualifier("paymentKafkaWriter")
     @Autowired
     KafkaWriter kafkaWriter;
     @Autowired
@@ -41,8 +42,8 @@ class PaymentListenerTest {
     }
 
     @Test
-    void validRequestWithObject() throws JsonProcessingException {
-        kafkaWriter.send("payment", new Payment("Msg", 100));
+    void validRequestWithObject() {
+        kafkaWriter.send(new Payment("Msg", 100));
 
         await().atMost(TIMEOUT).untilAsserted(() ->
             verify(1, 1)
@@ -50,8 +51,8 @@ class PaymentListenerTest {
     }
 
     @Test
-    void validRequestWithString() throws JsonProcessingException {
-        kafkaWriter.send("payment", "{\"message\": \"Msg\", \"amount\": 100}");
+    void validRequestWithString() {
+        kafkaWriter.send("{\"message\": \"Msg\", \"amount\": 100}");
 
         await().atMost(TIMEOUT).untilAsserted(() ->
             verify(1, 1)
@@ -59,8 +60,8 @@ class PaymentListenerTest {
     }
 
     @Test
-    void invalidJsonFormat() throws JsonProcessingException {
-        kafkaWriter.send("payment", "{\"invalid-json {");
+    void invalidJsonFormat() {
+        kafkaWriter.send("{\"invalid-json {");
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(0, 0)
@@ -68,8 +69,8 @@ class PaymentListenerTest {
     }
 
     @Test
-    void invalidFieldType() throws JsonProcessingException {
-        kafkaWriter.send("payment", "{\"message\": \"Msg\", \"amount\": \"not-a-number\"}");
+    void invalidFieldType() {
+        kafkaWriter.send("{\"message\": \"Msg\", \"amount\": \"not-a-number\"}");
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(0, 0)
@@ -77,8 +78,8 @@ class PaymentListenerTest {
     }
 
     @Test
-    void invalidFieldValue() throws JsonProcessingException {
-        kafkaWriter.send("payment", new Payment("Msg", -1));
+    void invalidFieldValue() {
+        kafkaWriter.send(new Payment("Msg", -1));
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(0, 0)
@@ -87,8 +88,8 @@ class PaymentListenerTest {
 
 
     @Test
-    void failedWithRetry() throws JsonProcessingException {
-        kafkaWriter.send("payment", new Payment(FAIL_RETRY, 100));
+    void failedWithRetry() {
+        kafkaWriter.send(new Payment(FAIL_RETRY, 100));
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(6, 0)
@@ -96,8 +97,8 @@ class PaymentListenerTest {
     }
 
     @Test
-    void failedButNoRetry() throws JsonProcessingException {
-        kafkaWriter.send("payment", new Payment(FAIL, 100));
+    void failedButNoRetry() {
+        kafkaWriter.send(new Payment(FAIL, 100));
 
         await().pollDelay(DELAY).untilAsserted(() ->
             verify(1, 0)

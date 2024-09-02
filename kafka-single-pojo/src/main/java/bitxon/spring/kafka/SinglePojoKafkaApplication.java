@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class JavaSpringKafkaApplication {
+public class SinglePojoKafkaApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(JavaSpringKafkaApplication.class, args);
+        SpringApplication.run(SinglePojoKafkaApplication.class, args);
     }
 
 }
