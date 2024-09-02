@@ -55,11 +55,15 @@ services:
       kafka-topics --create --topic order --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
       kafka-topics --create --topic payment --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
       kafka-topics --create --topic shipment --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+      kafka-topics --create --topic invoice-request --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+      kafka-topics --create --topic invoice-response --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+      kafka-topics --create --topic invoice-dlq --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
 
       echo 'Populating Kafka topics with messages...'
       kafka-console-producer --bootstrap-server kafka:29092 --property "parse.key=true" --property "key.separator=#" --topic order < /data/orders.json
       kafka-console-producer --bootstrap-server kafka:29092 --property "parse.key=true" --property "key.separator=#" --topic payment < /data/payments.json
       kafka-console-producer --bootstrap-server kafka:29092 --property "parse.key=true" --property "key.separator=#" --topic shipment < /data/shipment.json
+      kafka-console-producer --bootstrap-server kafka:29092 --property "parse.key=true" --property "key.separator=#" --topic invoice-request < /data/invoice.json
       echo 'All Done'
       "
 

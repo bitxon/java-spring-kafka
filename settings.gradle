@@ -6,4 +6,5 @@ include 'common-utils-test'
 include 'kafka-single-pojo'
 include 'kafka-batch-pojo'
 include 'kafka-batch-pojo-v2'
+include 'kafka-reply-or-dlq'
 
