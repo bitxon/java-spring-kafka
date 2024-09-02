@@ -1,11 +1,10 @@
 package bitxon.spring.kafka;
 
 import bitxon.spring.kafka.config.TestContainersConfig;
-import bitxon.spring.kafka.config.TestProducerConfig;
+import bitxon.spring.kafka.config.TestUtilsConfig;
 import bitxon.spring.kafka.listener.ShipmentBatchListener;
 import bitxon.spring.kafka.model.Shipment;
 import bitxon.spring.kafka.utils.KafkaWriter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Import({
     TestContainersConfig.class,
-    TestProducerConfig.class
+    TestUtilsConfig.class
 })
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class ShipmentBatchListenerTest {
@@ -44,8 +43,8 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void validRequestWithObject() throws JsonProcessingException {
-        kafkaWriter.send("shipment", new Shipment("1", 1));
+    void validRequestWithObject() {
+        kafkaWriter.send(new Shipment("1", 1));
 
         await().atMost(TIMEOUT).untilAsserted(() -> {
             assertAttemptsNumber(1);
@@ -54,13 +53,13 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void validRequestWithObjectBatch() throws JsonProcessingException {
+    void validRequestWithObjectBatch() {
         // given
         var entity1 = new Shipment("1", 1);
         var entity2 = new Shipment("2", 2);
 
         // when
-        kafkaWriter.send("shipment", List.of(entity1, entity2));
+        kafkaWriter.send(List.of(entity1, entity2));
 
         // then
         await().pollDelay(DELAY).untilAsserted(() -> {
@@ -70,8 +69,8 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void validRequestWithString() throws JsonProcessingException {
-        kafkaWriter.send("shipment", "{\"address\": \"Msg\", \"trackingNumber\": 100}");
+    void validRequestWithString() {
+        kafkaWriter.send("{\"address\": \"Msg\", \"trackingNumber\": 100}");
 
         await().atMost(TIMEOUT).untilAsserted(() -> {
             assertAttemptsNumber(1);
@@ -80,8 +79,8 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void invalidJsonFormat() throws JsonProcessingException {
-        kafkaWriter.send("shipment", "{\"invalid-json {");
+    void invalidJsonFormat() {
+        kafkaWriter.send("{\"invalid-json {");
 
         await().pollDelay(DELAY).untilAsserted(() -> {
             assertAttemptsNumber(1);
@@ -90,8 +89,8 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void invalidFieldType() throws JsonProcessingException {
-        kafkaWriter.send("shipment", "{\"address\": \"Msg\", \"trackingNumber\": \"not-a-number\"}");
+    void invalidFieldType() {
+        kafkaWriter.send("{\"address\": \"Msg\", \"trackingNumber\": \"not-a-number\"}");
 
         await().pollDelay(DELAY).untilAsserted(() -> {
             assertAttemptsNumber(1);
@@ -99,10 +98,9 @@ class ShipmentBatchListenerTest {
         });
     }
 
-//    @Disabled // TODO research why @Valid is not Working
     @Test
-    void invalidFieldValue() throws JsonProcessingException {
-        kafkaWriter.send("shipment", new Shipment("Msg", -1));
+    void invalidFieldValue() {
+        kafkaWriter.send(new Shipment("Msg", -1));
 
         await().pollDelay(DELAY).untilAsserted(() -> {
             assertAttemptsNumber(0);
@@ -111,10 +109,10 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void failedWithRetry() throws JsonProcessingException {
+    void failedWithRetry() {
         var entity1 = new Shipment(FAIL_RETRY, 100);
 
-        kafkaWriter.send("shipment", entity1);
+        kafkaWriter.send(entity1);
 
         await().pollDelay(DELAY).untilAsserted(() -> {
             assertAttempts(Map.of(
@@ -130,13 +128,13 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void failedWithRetryBatch() throws JsonProcessingException {
+    void failedWithRetryBatch() {
         var entity1 = new Shipment("1", 1);
         var entity2 = new Shipment(FAIL_RETRY, 2);
         var entity3 = new Shipment("3", 3);
         var entity4 = new Shipment("4", 4);
 
-        kafkaWriter.send("shipment", List.of(entity1, entity2, entity3, entity4));
+        kafkaWriter.send(List.of(entity1, entity2, entity3, entity4));
 
         await().pollDelay(DELAY).untilAsserted(() -> {
             assertAttempts(Map.of(
@@ -153,9 +151,9 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void failedButNoRetry() throws JsonProcessingException {
+    void failedButNoRetry() {
         var entity1 = new Shipment(FAIL, 100);
-        kafkaWriter.send("shipment", entity1);
+        kafkaWriter.send(entity1);
 
         await().pollDelay(DELAY).untilAsserted(() -> {
             assertAttempts(Map.of(1, List.of(entity1)));
@@ -164,7 +162,7 @@ class ShipmentBatchListenerTest {
     }
 
     @Test
-    void failedButNoRetryBatch() throws JsonProcessingException {
+    void failedButNoRetryBatch() {
         // given
         var entity1 = new Shipment("1", 1);
         var entity2 = new Shipment(FAIL, 2);
@@ -172,7 +170,7 @@ class ShipmentBatchListenerTest {
         var entity4 = new Shipment("4", 4);
 
         // when
-        kafkaWriter.send("shipment", List.of(entity1, entity2, entity3, entity4));
+        kafkaWriter.send(List.of(entity1, entity2, entity3, entity4));
 
         // then
         await().pollDelay(DELAY).untilAsserted(() -> {

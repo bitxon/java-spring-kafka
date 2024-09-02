@@ -6,10 +6,10 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
 @TestConfiguration(proxyBeanMethods = false)
-public class TestProducerConfig {
+public class TestUtilsConfig {
 
     @Bean
     public KafkaWriter kafkaWriter(@Value("${custom.shipment.bootstrap-servers}") String bootstrapServers) {
-        return new KafkaWriter(bootstrapServers, KafkaWriter.Mode.BATCH);
+        return new KafkaWriter(bootstrapServers, "shipment");
     }
 }
