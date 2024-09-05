@@ -76,6 +76,15 @@ class OrderListenerTest {
     }
 
     @Test
+    void invalidObjectNull() {
+        kafkaWriter.send((Order) null);
+
+        await().pollDelay(DELAY).untilAsserted(() ->
+            verify(0, 0)
+        );
+    }
+
+    @Test
     void invalidFieldValue() {
         kafkaWriter.send(new Order(null, 1));
 

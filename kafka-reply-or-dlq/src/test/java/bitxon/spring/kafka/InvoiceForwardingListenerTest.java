@@ -115,6 +115,19 @@ class InvoiceForwardingListenerTest {
     }
 
     @Test
+    void invalidObjectNull() {
+        // when
+        kafkaWriter.send((Invoice) null);
+
+        // then
+        await().pollDelay(DELAY).untilAsserted(() -> {
+            verify(0, 0);
+            assertThat(outputReader.find(all())).isEmpty();
+            assertThat(dlqReader.find(all())).singleElement().isNull();
+        });
+    }
+
+    @Test
     void invalidFieldValue() {
         // given
         var input = new Invoice(-1, "Msg D");
