@@ -78,6 +78,15 @@ class PaymentListenerTest {
     }
 
     @Test
+    void invalidObjectNull() {
+        kafkaWriter.send((Payment) null);
+
+        await().pollDelay(DELAY).untilAsserted(() ->
+            verify(0, 0)
+        );
+    }
+
+    @Test
     void invalidFieldValue() {
         kafkaWriter.send(new Payment("Msg", -1));
 
