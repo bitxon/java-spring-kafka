@@ -52,12 +52,12 @@ services:
       cub kafka-ready -b kafka:29092 1 30
 
       echo 'Creating Kafka topics...'
-      kafka-topics --create --topic order --partitions 3 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
-      kafka-topics --create --topic payment --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
-      kafka-topics --create --topic shipment --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
-      kafka-topics --create --topic invoice-request --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
-      kafka-topics --create --topic invoice-response --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
-      kafka-topics --create --topic invoice-dlq --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --replication-factor 1 --partitions 3 --topic order
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic payment
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic shipment
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic invoice-request
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic invoice-response
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --replication-factor 1 --partitions 1 --topic invoice-dlq
 
       echo 'Populating Kafka topics with messages...'
       kafka-console-producer --bootstrap-server kafka:29092 --property "parse.key=true" --property "key.separator=#" --topic order < /data/orders.json
