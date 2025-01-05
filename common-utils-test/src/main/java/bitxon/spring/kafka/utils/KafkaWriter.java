@@ -50,4 +50,8 @@ public class KafkaWriter {
         producer.send(record);
         // NOTE: producer.flush() - will ignore 'linger.ms'
     }
+
+    public void flush() {
+        producer.flush();
+    }
 }
