@@ -18,6 +18,20 @@ docker compose up -d
 ```
 
 ---
+## Kafka: Single Pojo Processing | Reply  Topic + DLQ Topic
+
+### Description
+- `InvoiceForwardingListener` forward message from `invoice-request` to `invoice-response` but in case of error to `invoice-dlq`
+
+### Run
+```shell
+docker compose up -d
+```
+```shell
+./gradlew kafka-single-pojo-reply-or-dlq:bootRun
+```
+
+---
 ## Kafka: Batch Pojo (v1) Processing
 
 ### Description
