@@ -7,4 +7,5 @@ include 'kafka-batch-pojo'
 include 'kafka-batch-pojo-v2'
 include 'kafka-single-pojo'
 include 'kafka-single-pojo-reply-or-dlq'
+include 'kafka-streams-pojo'
 
