@@ -1,3 +1,6 @@
+server:
+  port: 0 #random
+
 spring:
   application:
     name: app-kafka-batch-pojo-v2

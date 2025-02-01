@@ -1,8 +1,9 @@
-spring:
+server:
+  port: 0 #random
 
+spring:
   application:
     name: app-kafka-reply
-
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
